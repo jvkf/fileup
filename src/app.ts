@@ -4,6 +4,7 @@ import path from 'path';
 import strategy from './config/passport';
 import session from './config/session-cookie';
 import allowedPaths from './middleware/allowed-paths';
+import errorHandler from './middleware/error-handler';
 import storeUser from './middleware/store-user';
 import routes from './routes';
 
@@ -27,4 +28,7 @@ app.use('/sign-up', routes.signup);
 app.use('/login', routes.login);
 app.use('/logout', routes.logout);
 app.use('/user', routes.user);
+
+app.use(errorHandler);
+
 export default app;
