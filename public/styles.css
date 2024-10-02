@@ -1,0 +1,26 @@
+body {
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 100px 1fr 100px;
+}
+
+header,
+footer {
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin-bottom: 0;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.block {
+  display: block;
+}
+
+.hidden {
+  display: none;
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Login - File Uploader</title>
+</head>
+
+<body>
+  <%- include('../partials/navbar.ejs') %>
+  <main class="container">
+    <h1 class="text-center">Login</h1>
+    <% if (locals.messages) { %>
+    <div class="text-center">
+      <% locals.messages.forEach(msg => { %>
+        <p><mark><%= msg %></mark></p>
+      <% }) %>
+    </div>
+    <% } %>
+    <form method="POST" action="/login">
+      <%- include('../partials/input', {
+        inputOpts: {
+          name:'email', 
+          label: 'Email', 
+          placeholder: 'Your email', }
+        }) %>
+      <%- include('../partials/input', {
+        inputOpts: {
+          name:'password', 
+          label: 'Your password', 
+          placeholder: '', 
+          type: 'password' }
+        }) %>
+      <button type="submit">Login</button>
+    </form>
+    <div class="text-center"><a href="/sign-up">Don't have an account?</a></div>
+  </main>
+  <%- include('../partials/footer.ejs') %>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<div>
+  <label for="<%= inputOpts.name %>"> <%= inputOpts.label %> </label>
+  <input 
+    id="<%= inputOpts.name %>" 
+    name="<%= inputOpts.name %>"
+    placeholder="<%= inputOpts.placeholder %>" 
+    value="<%= locals.formData ? locals.formData[inputOpts.name] : '' %>" 
+    <%=locals.errors ? 
+    ' aria-invalid=' + Object.hasOwn(locals.errors, inputOpts.name) 
+    : '' %> 
+    type="<%= inputOpts.type ?? 'text' %>" 
+  /> 
+  <% if (locals.errors && Object.hasOwn(locals.errors, inputOpts.name)) { %>
+    <small>
+      <% locals.errors[inputOpts.name].forEach(message=> { %>
+        <span class="block">- <%= message %></span>
+      <% }) %>
+    </small>
+  <% } %>
+</div>

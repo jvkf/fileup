@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Edit account - File Uploader</title>
+  </head>
+
+  <body>
+    <%- include('../partials/navbar.ejs') %>
+    <main class="container">
+      <h1 class="text-center">Edit your account</h1>
+      <div class="success-container hidden">
+        <p class="text-center success"></p>
+      </div>
+      <div class="error-container hidden">
+        <p class="text-center error"></p>
+      </div>
+
+      <article class="name-form">
+        <h2>Change Name</h2>
+        <form id="updateNameForm" action="">
+          <%- include('../partials/input', { inputOpts: { name:'name', label:
+          'Name', placeholder: '', value: formData.name, } }) %>
+          <button type="submit">Update Name</button>
+        </form>
+      </article>
+
+      <article class="password-form">
+        <h2>Change Password</h2>
+        <form id="updatePasswordForm">
+          <%- include('../partials/input', { inputOpts: {
+          name:'current_password', label: 'Current password', placeholder: '',
+          type: 'password' } }) %> <%- include('../partials/input', { inputOpts:
+          { name:'new_password', label: 'New password', placeholder: '', type:
+          'password' } }) %>
+          <button type="submit">Update Password</button>
+        </form>
+      </article>
+
+      <article class="delete-form">
+        <h2>Delete Account</h2>
+        <p>Warning: This action cannot be undone.</p>
+        <form id="deleteForm">
+          <button type="submit" class="secondary">Delete account</button>
+        </form>
+      </article>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+    <script>
+      document
+        .getElementById('updateNameForm')
+        .addEventListener('submit', function (e) {
+          const path = '/user/name';
+          e.preventDefault();
+          const jsonData = {
+            name: this.elements.name.value,
+          };
+          submitForm(jsonData, 'PUT', path);
+        });
+
+      document
+        .getElementById('updatePasswordForm')
+        .addEventListener('submit', function (e) {
+          const path = '/user/password';
+          e.preventDefault();
+          const jsonData = {
+            current_password: this.elements.current_password.value,
+            new_password: this.elements.new_password.value,
+          };
+          submitForm(jsonData, 'PUT', path);
+        });
+
+      document
+        .getElementById('deleteForm')
+        .addEventListener('submit', function (e) {
+          const path = '/user';
+          e.preventDefault();
+          if (
+            confirm(
+              'Are you sure you want to delete your account? This action cannot be undone.'
+            )
+          ) {
+            submitForm({}, 'DELETE', path);
+          }
+        });
+
+      function clearInputErrors(field) {
+        const inputMessages = document.querySelectorAll(`.${field}-form small`);
+        inputMessages.forEach((inputMessage) => {
+          inputMessage.remove();
+        });
+        const inputElements = document.querySelectorAll(`.${field}-form input`);
+        inputElements.forEach((inputElement) => {
+          inputElement.removeAttribute('aria-invalid');
+        });
+      }
+
+      function clearGeneralError() {
+        const errorContainer = document.querySelector('.error-container');
+        const errorMsg = document.querySelector('.error-container .error');
+        errorMsg.textContent = '';
+        errorContainer.className = 'error-container hidden';
+      }
+
+      function insertFormErrors(errors, field) {
+        const container = document.querySelector(`.${field}-form`);
+        const errorInputs = Object.keys(errors);
+        errorInputs.forEach((input) => {
+          const inputElement = container.querySelector(`input[name=${input}]`);
+          inputElement.setAttribute('aria-invalid', 'true');
+          errors[input].forEach((error) => {
+            const errorMsg = document.createElement('small');
+            errorMsg.textContent = error;
+            errorMsg.className = 'error';
+            inputElement.after(errorMsg);
+          });
+        });
+      }
+
+      function scrollToTop() {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth',
+        });
+      }
+
+      function insertGeneralError(message) {
+        const errorContainer = document.querySelector('.error-container');
+        const errorMsg = document.querySelector('.error-container .error');
+        errorMsg.textContent = message;
+        errorContainer.className = 'error-container';
+        scrollToTop();
+      }
+
+      function insertSuccess(message, isDelete = false) {
+        if (isDelete) {
+          window.location.href = '/';
+          return;
+        }
+        const successContainer = document.querySelector('.success-container');
+        const successMsg = document.querySelector(
+          '.success-container .success'
+        );
+        successMsg.textContent = message;
+        successContainer.className = 'success-container';
+        scrollToTop();
+        setTimeout(() => {
+          successMsg.textContent = '';
+          successContainer.className = 'success-container hidden';
+        }, 5000);
+      }
+
+      function clearAllErrors() {
+        clearInputErrors('name');
+        clearInputErrors('password');
+        clearInputErrors('delete');
+        clearGeneralError();
+      }
+
+      function handleDOM(json_response, isDelete = false) {
+        const { status, field, errors, message } = json_response;
+        const actionOptions = {
+          form_error: insertFormErrors.bind(null, errors, field),
+          general_error: insertGeneralError.bind(
+            null,
+            message ?? 'An error occurred'
+          ),
+          success: insertSuccess.bind(null, message, isDelete),
+        };
+
+        const actionFn = actionOptions[status] || actionOptions.general_error;
+
+        clearAllErrors();
+        actionFn();
+      }
+
+      async function submitForm(jsonData, method, path) {
+        try {
+          const response = await fetch(path, {
+            method: method,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonData),
+          });
+
+          const jsonResponse = await response.json();
+          handleDOM(jsonResponse, method === 'DELETE');
+        } catch (error) {
+          const errorContainer = document.querySelector('.error-container');
+          const errorMsg = document.querySelector('.error-container.error');
+          errorMsg.textContent =
+            'An error occurred while processing your request';
+          errorContainer.className = 'error-container';
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <title>Create Account - File Uploader</title>
+</head>
+
+<body>
+  <%- include('../partials/navbar.ejs') %>
+  <main class="container">
+    <h1 class="text-center">Sign Up</h1>
+    <form method="POST" action="/sign-up">
+      <%- include('../partials/input', {
+        inputOpts: {
+          name: 'name', 
+          label: 'Name',
+          placeholder: 'John Doe', 
+        }
+      }) %>
+      <%- include('../partials/input', {
+        inputOpts: {
+          name:'email', 
+          label: 'Email', 
+          placeholder: 'john@doe.com', }
+        }) %>
+      <%- include('../partials/input', {
+        inputOpts: {
+          name:'password', 
+          label: 'Password', 
+          placeholder: '', 
+          type: 'password' }
+        }) %>
+      <button type="submit">Sign Up</button>
+    </form>
+    <div class="text-center"><a href="/login">Already have an account?</a></div>
+  </main>
+  <%- include('../partials/footer.ejs') %>
+</body>
+</html>
