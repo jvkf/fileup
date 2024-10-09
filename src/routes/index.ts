@@ -10,4 +10,5 @@ export default {
   logout,
   signup,
   user,
+  upload,
 };
