@@ -32,4 +32,8 @@ app.use('/user/upload', routes.upload);
 
 app.use(errorHandler);
 
+app.use((req, res) => {
+  res.status(404).render('404');
+});
+
 export default app;

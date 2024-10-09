@@ -4,11 +4,11 @@ const errorHandler = (
   error: Error,
   req: Request,
   res: Response,
-  NextFunction
+  next: NextFunction
 ) => {
-  console.log('⚠️ Something went wrong:');
-  console.error(error);
-  return res.status(500).send('Internal error - please try again later.');
+  res.status(500).render('error', {
+    message: error.message,
+  });
 };
 
 export default errorHandler;
