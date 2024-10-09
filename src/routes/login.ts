@@ -8,7 +8,7 @@ router.get('/', userController.loginUserGET);
 
 router.post(
   '/',
-  [userController.loginUserPOST],
+  userController.loginUserPOST,
   passport.authenticate('local', {
     successRedirect: '/',
     failureRedirect: '/login',
