@@ -1,16 +1,18 @@
 import { NextFunction, Request, Response } from 'express';
 
-const redirectablePathsForLogged = ['/sign-up', '/login'];
-const redirectablePathsForAnon = ['/user', '/user/folders'];
+const authPaths = ['/login', '/signup'];
 
 const allowedPaths = (req: Request, res: Response, next: NextFunction) => {
-  const shouldRedirectLogged =
-    res.locals.currentUser && redirectablePathsForLogged.includes(req.path);
-  const shouldRedirectAnon =
-    !res.locals.currentUser && redirectablePathsForAnon.includes(req.path);
+  const isAuthenticated = !!res.locals.currentUser;
+  const isProtectedPath = req.path.startsWith('/user');
+  const isAuthPath = authPaths.includes(req.path);
 
-  if (shouldRedirectLogged || shouldRedirectAnon) {
-    return res.status(405).redirect('/');
+  if (!isAuthenticated && isProtectedPath) {
+    return res.status(401).redirect('/login');
+  }
+
+  if (isAuthenticated && isAuthPath) {
+    return res.redirect('/');
   }
 
   next();
