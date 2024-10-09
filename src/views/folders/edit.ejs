@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Edit Folder - FileUp</title>
+  </head>
+  <body>
+    <%- include('../partials/navbar.ejs') %>
+    <main class="container">
+      <h1 class="text-center">Edit Folder</h1>
+      <section class="container">
+        <form id="editFolderForm">
+          <input
+            type="text"
+            id="folderName"
+            name="name"
+            value="<%= folder.name %>"
+            placeholder="Folder Name"
+            required
+          />
+          <button type="submit">Update folder</button>
+        </form>
+        <p id="errorMessage" class="text-center hidden"></p>
+      </section>
+      <hr />
+      <section class="text-center">
+        <a href="/user/folders" role="button" class="secondary"
+          >Back to Folders</a
+        >
+      </section>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('editFolderForm');
+        const errorMessage = document.getElementById('errorMessage');
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const folderId = '<%= folder.id %>';
+          const folderName = document.getElementById('folderName').value;
+
+          try {
+            const response = await fetch(`/user/folders/${folderId}`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ name: folderName }),
+            });
+
+            if (response.ok) {
+              window.location.href = '/user/folders';
+            } else {
+              const data = await response.json();
+              errorMessage.textContent =
+                data.message || 'An error occurred while updating the folder.';
+              errorMessage.classList.remove('hidden');
+            }
+          } catch (error) {
+            console.error('Error updating folder:', error);
+            errorMessage.textContent =
+              'An error occurred while updating the folder.';
+            errorMessage.classList.remove('hidden');
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

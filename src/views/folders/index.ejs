@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title>Your Folders - FileUp</title>
+  </head>
+  <body>
+    <%- include('../partials/navbar.ejs') %>
+    <main class="container">
+      <div id="message" class="message-container hidden text-center">
+        <p id="message-text"></p>
+      </div>
+      <h1 class="text-center">Folders</h1>
+      <section class="container">
+        <h2 class="text-center">Create</h2>
+        <form action="/user/folders" method="POST">
+          <input type="text" name="name" placeholder="Folder Name" required />
+          <button type="submit">Create folder</button>
+        </form>
+      </section>
+      <hr />
+
+      <section>
+        <h2 class="text-center">Current</h2>
+        <% if (locals.folders && folders.length > 0) { %>
+        <div class="grid" id="folders-container">
+          <% folders.forEach(folder => { %>
+          <article
+            class="folder-card text-center"
+            data-folder-id="<%= folder.id %>"
+          >
+            <header><%= folder.name %></header>
+            <footer>
+              <div role="group">
+                <a href="/user/folders/<%= folder.id %>/edit" role="button"
+                  >Edit</a
+                >
+                <button
+                  type="button"
+                  class="secondary delete-folder"
+                  data-folder-id="<%= folder.id %>"
+                >
+                  Delete
+                </button>
+              </div>
+            </footer>
+          </article>
+          <% }); %>
+        </div>
+        <% } else { %>
+        <p class="text-center">
+          No folders found. Create your first folder above!
+        </p>
+        <% } %>
+      </section>
+    </main>
+    <%- include('../partials/footer.ejs') %>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const foldersContainer = document.getElementById('folders-container');
+
+        function showMessage(message, isError = false) {
+          const messageContainer = document.getElementById('message');
+          const messageText = document.getElementById('message-text');
+          messageText.textContent = message;
+          messageContainer.classList.remove('hidden');
+
+          scrollToTop();
+
+          setTimeout(() => {
+            messageContainer.classList.add('hidden');
+            messageText.textContent = '';
+          }, 5000);
+        }
+
+        function scrollToTop() {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          });
+        }
+
+        foldersContainer.addEventListener('click', async (e) => {
+          if (e.target.classList.contains('delete-folder')) {
+            const folderId = e.target.dataset.folderId;
+            const confirmDelete = confirm(
+              'Are you sure you want to delete this folder?'
+            );
+
+            if (confirmDelete) {
+              try {
+                const response = await fetch(`/user/folders/${folderId}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                  const folderElement = document.querySelector(
+                    `[data-folder-id="${folderId}"]`
+                  );
+                  folderElement.remove();
+
+                  if (foldersContainer.children.length === 0) {
+                    foldersContainer.innerHTML =
+                      '<p class="text-center">No folders found. Create your first folder above!</p>';
+                  }
+
+                  showMessage(result.message);
+                } else {
+                  showMessage(
+                    result.message ||
+                      'Failed to delete the folder. Please try again.',
+                    true
+                  );
+                }
+              } catch (error) {
+                console.error('Error deleting folder:', error);
+                showMessage(
+                  'An error occurred while deleting the folder.',
+                  true
+                );
+              }
+            }
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

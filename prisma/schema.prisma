@@ -12,6 +12,7 @@ model User {
   email String @unique
   name String
   password String
+  folders Folder[]
 }
 
 model Session {
@@ -19,4 +20,11 @@ model Session {
   sid       String   @unique
   data      String
   expiresAt   DateTime
+}
+
+model Folder {
+  id Int @id @default(autoincrement())  
+  name String
+  userId Int
+  user User @relation(fields: [userId], references: [id])
 }
