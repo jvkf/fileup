@@ -29,7 +29,6 @@ app.use('/login', routes.login);
 app.use('/logout', routes.logout);
 app.use('/user', routes.user);
 app.use('/user/folders', routes.folders);
-app.use('/user/upload', routes.upload);
 
 app.use(errorHandler);
 

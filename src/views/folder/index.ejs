@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <title><%= folder.name %> - FileUp</title>
+  </head>
+  <body>
+    <%- include('../partials/navbar.ejs') %>
+    <main class="container">
+      <h1 class="text-center"><%= folder.name %></h1>
+
+      <% if (files.length > 0) { %>
+      <section>
+        <h2>Files in this folder</h2>
+        <div class="custom-grid">
+          <% files.forEach(file => { %>
+          <article>
+            <h3><%= file.name %></h3>
+            <p>Size: <%= (file.size / 1024).toFixed(2) %> KB</p>
+            <p>
+              Uploaded on: <%= file.date.toLocaleString('en-US', { year:
+              'numeric', month: '2-digit', day: '2-digit', hour: '2-digit',
+              minute: '2-digit' }) %>
+            </p>
+            <a href="<%= file.path %>" role="button" download>Download</a>
+          </article>
+          <% }) %>
+        </div>
+      </section>
+      <% } else { %>
+      <article>
+        <p class="text-center">
+          This folder is empty. Upload some files to get started!
+        </p>
+      </article>
+      <% } %>
+      <hr />
+      <article>
+        <h3>Upload a file</h3>
+        <form
+          id="uploadForm"
+          action="/user/folders/<%= folder.id %>/upload"
+          method="POST"
+          enctype="multipart/form-data"
+        >
+          <label for="name">File name:</label>
+          <input type="text" name="name" id="name" required />
+
+          <label for="file">Choose a file:</label>
+          <input type="file" name="file" id="file" accept="*/*" required />
+
+          <button type="submit" id="submitButton">Upload</button>
+        </form>
+        <p class="file-info">Maximum file size: 5MB</p>
+      </article>
+      <hr />
+    </main>
+    <%- include('../partials/footer.ejs') %>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const fileInput = document.getElementById('file');
+        const uploadForm = document.getElementById('uploadForm');
+        const submitButton = document.getElementById('submitButton');
+
+        fileInput.addEventListener('change', function (e) {
+          const file = e.target.files[0];
+          if (file && file.size > 5 * 1024 * 1024) {
+            alert('File size exceeds 5MB limit. Please choose a smaller file.');
+            e.target.value = '';
+          }
+        });
+
+        uploadForm.addEventListener('submit', function (e) {
+          submitButton.disabled = true;
+        });
+
+        uploadForm.addEventListener('reset', function (e) {
+          submitButton.disabled = false;
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -10,6 +10,26 @@ export const getFolders = asyncHandler(async (req, res, next) => {
 
   res.render('folders/index', { folders });
 });
+export const getFolder = asyncHandler(async (req, res, next) => {
+  const { folderId } = req.params;
+  const folderWithFiles = await prisma.folder.findUnique({
+    where: {
+      id: Number(folderId),
+      userId: req.user?.id,
+    },
+    include: {
+      files: true,
+    },
+  });
+
+  if (!folderWithFiles) {
+    return sendRenderedError(res, 404, 'Folder not found');
+  }
+
+  const { files, ...folder } = folderWithFiles;
+
+  res.render('folder/index', { folder, files });
+});
 
 export const createFolder = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
