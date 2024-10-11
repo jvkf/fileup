@@ -2,8 +2,7 @@ import folders from './folders';
 import home from './home';
 import login from './login';
 import logout from './logout';
-import signup from './sign-up';
-import upload from './upload';
+import signup from './signup';
 import user from './user';
 
 export default {
@@ -13,5 +12,4 @@ export default {
   logout,
   signup,
   user,
-  upload,
 };

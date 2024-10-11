@@ -15,7 +15,7 @@
     <%- include('../partials/navbar.ejs') %>
     <main class="container">
       <h1 class="text-center">Sign Up</h1>
-      <form method="POST" action="/sign-up">
+      <form id="signupForm" method="POST" action="/signup">
         <%- include('../partials/input', { inputOpts: { name: 'name', label:
         'Name', placeholder: 'John Doe', } }) %> <%-
         include('../partials/input', { inputOpts: { name:'email', label:
@@ -29,5 +29,19 @@
       </div>
     </main>
     <%- include('../partials/footer.ejs') %>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const signupForm = document.getElementById('signupForm');
+        const submitButton = signupForm.querySelector('button[type="submit"]');
+
+        signupForm.addEventListener('submit', () => {
+          submitButton.disabled = true;
+        });
+
+        signupForm.addEventListener('reset', () => {
+          submitButton.disabled = false;
+        });
+      });
+    </script>
   </body>
 </html>

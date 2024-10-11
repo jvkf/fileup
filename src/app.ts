@@ -24,7 +24,7 @@ app.use(storeUser);
 app.use(allowedPaths);
 
 app.use('/', routes.home);
-app.use('/sign-up', routes.signup);
+app.use('/signup', routes.signup);
 app.use('/login', routes.login);
 app.use('/logout', routes.logout);
 app.use('/user', routes.user);
