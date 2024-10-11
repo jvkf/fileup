@@ -1,7 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import prisma from '../config/db-client';
 
-export const getFolders = asyncHandler(async (req, res, next) => {
+export const getFolders = asyncHandler(async (req, res) => {
   const folders = await prisma.folder.findMany({
     where: {
       userId: req.user?.id,
@@ -10,6 +10,17 @@ export const getFolders = asyncHandler(async (req, res, next) => {
 
   res.render('folders/index', { folders });
 });
+
+export const getHomeFolders = asyncHandler(async (req, res) => {
+  const folders = await prisma.folder.findMany({
+    where: {
+      userId: req.user?.id,
+    },
+  });
+
+  res.render('index', { folders });
+});
+
 export const getFolder = asyncHandler(async (req, res, next) => {
   const { folderId } = req.params;
   const folderWithFiles = await prisma.folder.findUnique({

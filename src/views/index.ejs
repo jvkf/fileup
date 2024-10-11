@@ -15,15 +15,28 @@
     <main class="container">
       <h1 class="text-center">Welcome to FileUp</h1>
       <% if (!locals.currentUser) { %>
-      <article>
+      <div class="center">
         <h2 class="text-center">Please login or create an account!</h2>
-      </article>
+      </div>
       <% } else { %>
-      <h2 class="text-center">
-        Hey <%= currentUser.name %>! <br />
-        Select a folder to use
-      </h2>
-      <div class="grid"></div>
+      <h2 class="text-center">Hello <%= currentUser.name %>! <br /></h2>
+        <% if (folders.length > 0) { %>
+        <section>
+          <h3>Folders</h3>
+            <% folders.forEach(folder => { %>
+            <article>
+              <a href="/user/folders/<%= folder.id %>"><%= folder.name %></a>
+            </article>
+            <% }) %>
+        </section>
+        <% } else { %>
+        <p class="text-center">
+          You don't have any folders yet. Please
+          <a href="/user/folders/">create a folder</a>
+          first.
+        </p>
+        <% } %>
+      </article>
       <% } %>
     </main>
     <%- include('partials/footer.ejs') %>
