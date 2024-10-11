@@ -62,11 +62,8 @@
         <% } %>
       </section>
     </main>
-    <%- include('../partials/footer.ejs') %> <% if (locals.folders &&
-    folders.length > 0) { %>
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-        const foldersContainer = document.getElementById('folders-container');
         const createFolderForm = document.querySelector(
           'form[action="/user/folders"]'
         );
@@ -75,6 +72,13 @@
           const submitButton = e.submitter;
           submitButton.disabled = true;
         });
+      });
+    </script>
+    <%- include('../partials/footer.ejs') %> <% if (locals.folders &&
+    folders.length > 0) { %>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const foldersContainer = document.getElementById('folders-container');
 
         function showMessage(message, isError = false) {
           const messageContainer = document.getElementById('message');
@@ -144,6 +148,8 @@
               } finally {
                 e.target.disabled = false;
               }
+            } else {
+              e.target.disabled = false;
             }
           }
         });

@@ -51,10 +51,7 @@ export const createUserPOST = asyncHandler(async (req, res, next) => {
 });
 
 export const loginUserGET = asyncHandler(async (req, res, next) => {
-  const messages = req.session.messages;
-  if (messages) {
-    req.session.messages = undefined;
-  }
+  const messages = req.session.messages || [];
   res.render('login/index', { messages });
 });
 

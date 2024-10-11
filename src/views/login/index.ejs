@@ -15,17 +15,15 @@
     <%- include('../partials/navbar.ejs') %>
     <main class="container">
       <h1 class="text-center">Login</h1>
-      <% if (locals.messages) { %>
+      <% if (locals.messages && locals.messages.length > 0) { %>
       <div class="text-center">
-        <% locals.messages.forEach(msg => { %>
-        <p><mark><%= msg %></mark></p>
-        <% }) %>
+        <p><mark><%= messages[messages.length - 1] %></mark></p>
       </div>
       <% } %>
       <form id="loginForm" method="POST" action="/login">
-        <%- include('../partials/input', { inputOpts: { name:'email', label:
-        'Email', placeholder: 'Your email', } }) %> <%-
-        include('../partials/input', { inputOpts: { name:'password', label:
+        <%- include('../partials/input', { inputOpts: { name: 'email', label:
+        'Email', placeholder: 'Your email' } }) %> <%-
+        include('../partials/input', { inputOpts: { name: 'password', label:
         'Your password', placeholder: '', type: 'password' } }) %>
         <button type="submit">Login</button>
       </form>

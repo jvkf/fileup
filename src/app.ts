@@ -5,6 +5,7 @@ import path from 'path';
 import strategy from './config/passport';
 import session from './config/session-cookie';
 import allowedPaths from './middleware/allowed-paths';
+import clearLoginMessages from './middleware/clear-login-messages';
 import errorHandler from './middleware/error-handler';
 import storeUser from './middleware/store-user';
 import routes from './routes';
@@ -45,6 +46,7 @@ app.use(passport.session());
 passport.use(strategy);
 app.use(storeUser);
 app.use(allowedPaths);
+app.use(clearLoginMessages);
 
 app.use('/', routes.home);
 app.use('/signup', routes.signup);
