@@ -15,11 +15,15 @@
     <%- include('../partials/navbar.ejs') %>
     <main class="container">
       <h1 class="text-center">Edit your account</h1>
-      <div class="success-container hidden">
-        <p class="text-center success"></p>
+      <div class="success-container hidden" aria-live="polite">
+        <article>
+          <p class="text-center success"></p>
+        </article>
       </div>
       <div class="error-container hidden">
-        <p class="text-center error"></p>
+        <article>
+          <p class="text-center error"></p>
+        </article>
       </div>
 
       <article class="name-form">
@@ -56,37 +60,45 @@
       document
         .getElementById('updateNameForm')
         .addEventListener('submit', function (e) {
-          const path = '/user/name';
           e.preventDefault();
+          const submitButton = e.submitter;
+          submitButton.disabled = true;
+          const path = '/user/name';
           const jsonData = {
             name: this.elements.name.value,
           };
-          submitForm(jsonData, 'PUT', path);
+          submitForm(jsonData, 'PUT', path, submitButton);
         });
 
       document
         .getElementById('updatePasswordForm')
         .addEventListener('submit', function (e) {
-          const path = '/user/password';
           e.preventDefault();
+          const submitButton = e.submitter;
+          submitButton.disabled = true;
+          const path = '/user/password';
           const jsonData = {
             current_password: this.elements.current_password.value,
             new_password: this.elements.new_password.value,
           };
-          submitForm(jsonData, 'PUT', path);
+          submitForm(jsonData, 'PUT', path, submitButton);
         });
 
       document
         .getElementById('deleteForm')
         .addEventListener('submit', function (e) {
-          const path = '/user';
           e.preventDefault();
+          const submitButton = e.submitter;
+          submitButton.disabled = true;
+          const path = '/user';
           if (
             confirm(
               'Are you sure you want to delete your account? This action cannot be undone.'
             )
           ) {
-            submitForm({}, 'DELETE', path);
+            submitForm({}, 'DELETE', path, submitButton);
+          } else {
+            submitButton.disabled = false;
           }
         });
 
@@ -180,25 +192,28 @@
         actionFn();
       }
 
-      async function submitForm(jsonData, method, path) {
-        try {
-          const response = await fetch(path, {
-            method: method,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(jsonData),
+      function submitForm(jsonData, method, path, submitButton) {
+        fetch(path, {
+          method: method,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(jsonData),
+        })
+          .then((response) => response.json())
+          .then((jsonResponse) => {
+            handleDOM(jsonResponse, method === 'DELETE');
+          })
+          .catch(() => {
+            const errorContainer = document.querySelector('.error-container');
+            const errorMsg = document.querySelector('.error-container .error');
+            errorMsg.textContent =
+              'An error occurred while processing your request';
+            errorContainer.className = 'error-container';
+          })
+          .finally(() => {
+            submitButton.disabled = false;
           });
-
-          const jsonResponse = await response.json();
-          handleDOM(jsonResponse, method === 'DELETE');
-        } catch (error) {
-          const errorContainer = document.querySelector('.error-container');
-          const errorMsg = document.querySelector('.error-container.error');
-          errorMsg.textContent =
-            'An error occurred while processing your request';
-          errorContainer.className = 'error-container';
-        }
       }
     </script>
   </body>

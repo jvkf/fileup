@@ -22,7 +22,7 @@
         <% }) %>
       </div>
       <% } %>
-      <form method="POST" action="/login">
+      <form id="loginForm" method="POST" action="/login">
         <%- include('../partials/input', { inputOpts: { name:'email', label:
         'Email', placeholder: 'Your email', } }) %> <%-
         include('../partials/input', { inputOpts: { name:'password', label:
@@ -34,5 +34,19 @@
       </div>
     </main>
     <%- include('../partials/footer.ejs') %>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const loginForm = document.getElementById('loginForm');
+        const submitButton = loginForm.querySelector('button[type="submit"]');
+
+        loginForm.addEventListener('submit', () => {
+          submitButton.disabled = true;
+        });
+
+        loginForm.addEventListener('reset', () => {
+          submitButton.disabled = false;
+        });
+      });
+    </script>
   </body>
 </html>

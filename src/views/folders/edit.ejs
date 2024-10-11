@@ -40,9 +40,11 @@
       document.addEventListener('DOMContentLoaded', () => {
         const form = document.getElementById('editFolderForm');
         const errorMessage = document.getElementById('errorMessage');
+        const submitButton = form.querySelector('button[type="submit"]');
 
         form.addEventListener('submit', async (e) => {
           e.preventDefault();
+          submitButton.disabled = true;
           const folderId = '<%= folder.id %>';
           const folderName = document.getElementById('folderName').value;
 
@@ -68,6 +70,8 @@
             errorMessage.textContent =
               'An error occurred while updating the folder.';
             errorMessage.classList.remove('hidden');
+          } finally {
+            submitButton.disabled = false;
           }
         });
       });
