@@ -16,7 +16,28 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(helmet());
+
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", 'https://cdn.jsdelivr.net', "'unsafe-inline'"],
+        styleSrc: ["'self'", 'https://cdn.jsdelivr.net', "'unsafe-inline'"],
+        imgSrc: ["'self'", 'data:', 'https://res.cloudinary.com'],
+        connectSrc: ["'self'"],
+        fontSrc: ["'self'", 'https://cdn.jsdelivr.net'],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+    crossOriginEmbedderPolicy: false,
+    crossOriginOpenerPolicy: {
+      policy: 'same-origin',
+    },
+    crossOriginResourcePolicy: { policy: 'same-origin' },
+  })
+);
 
 app.use(session);
 app.use(passport.initialize());
