@@ -1,4 +1,5 @@
 import express from 'express';
+import helmet from 'helmet';
 import passport from 'passport';
 import path from 'path';
 import strategy from './config/passport';
@@ -15,6 +16,7 @@ app.set('view engine', 'ejs');
 app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(helmet());
 
 app.use(session);
 app.use(passport.initialize());

@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node dist/server.js",
+    "start": "node --env-file=.env dist/server.js",
     "build": "pnpm install && npx tsc && pnpm run copy",
     "dev": "tsx watch --env-file=.env src/server.ts",
     "type-check": "tsc --noEmit",
@@ -23,6 +23,7 @@
     "express": "^4.21.0",
     "express-async-handler": "^1.2.0",
     "express-session": "^1.18.0",
+    "helmet": "^8.0.0",
     "multer": "1.4.5-lts.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
