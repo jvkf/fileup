@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --env-file=.env dist/server.js",
-    "build": "pnpm install && npx tsc && pnpm run copy",
+    "build": "pnpm install && npx prisma migrate deploy && npx tsc && pnpm run copy",
     "dev": "tsx watch --env-file=.env src/server.ts",
     "type-check": "tsc --noEmit",
     "copy": "cp -R src/views dist/views"
