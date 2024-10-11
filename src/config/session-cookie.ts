@@ -6,7 +6,7 @@ const session = expressSession({
   cookie: {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   },
-  secret: 'random thing',
+  secret: process.env.SESSION_SECRET || 'default_secret',
   resave: false,
   saveUninitialized: false,
   store: new PrismaSessionStore(prisma, {
