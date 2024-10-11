@@ -2,6 +2,7 @@ import { Prisma } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import asyncHandler from 'express-async-handler';
 import prisma from '../config/db-client';
+import { sendJsonError, sendRenderedError } from '../utils/errorUtils';
 import {
   validateCreateUserData,
   validateLoginUserData,
@@ -24,33 +25,29 @@ export const createUserPOST = asyncHandler(async (req, res, next) => {
     });
   }
 
-  bcrypt.hash(formData.password, 10, async (err, hashedPwd) => {
-    if (err) {
-      return res.status(500).render('signup/index');
-    }
+  try {
+    const hashedPwd = await bcrypt.hash(formData.password, 10);
 
-    try {
-      const user = await prisma.user.create({
-        data: {
-          email: req.body.email,
-          name: req.body.name,
-          password: hashedPwd,
-        },
+    const user = await prisma.user.create({
+      data: {
+        email: req.body.email,
+        name: req.body.name,
+        password: hashedPwd,
+      },
+    });
+
+    res.redirect('/login');
+  } catch (e) {
+    const isEmailRepeated =
+      e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002';
+    if (isEmailRepeated) {
+      return res.status(400).render('signup/index', {
+        errors: { email: ['Email already registered.'] },
+        formData: req.body,
       });
-
-      res.redirect('/login');
-    } catch (e) {
-      const isEmailRepeated =
-        e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002';
-      if (isEmailRepeated) {
-        return res.status(400).render('signup/index', {
-          errors: { email: ['Email already registered.'] },
-          formData: req.body,
-        });
-      }
-      throw e;
     }
-  });
+    throw e;
+  }
 });
 
 export const loginUserGET = asyncHandler(async (req, res, next) => {
@@ -66,8 +63,13 @@ export const loginUserPOST = asyncHandler(async (req, res, next) => {
   const validation = validateLoginUserData(formData);
 
   if (!validation.success) {
+    const errors = {
+      password: ['Try again'],
+      ...validation.error.flatten().fieldErrors,
+    };
+
     return res.status(400).render('login/index', {
-      errors: validation.error.flatten().fieldErrors,
+      errors,
       formData: { email: req.body.email },
     });
   }
@@ -83,7 +85,7 @@ export const editUserGET = asyncHandler(async (req, res, next) => {
 
 export const updateName = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
-  const userId = res.locals.currentUser.id;
+  const userId = req.user?.id;
 
   const validation = validateUpdateNameData({ name });
 
@@ -109,16 +111,18 @@ export const updateName = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error('Error updating user name:', error);
-    res.status(500).json({
-      status: 'general_error',
-      message: '❌ An error occurred while updating your name',
-    });
+    return sendJsonError(
+      res,
+      500,
+      'general_error',
+      '❌ An error occurred while updating your name'
+    );
   }
 });
 
 export const updatePassword = asyncHandler(async (req, res, next) => {
   const { current_password, new_password } = req.body;
-  const userId = res.locals.currentUser.id;
+  const userId = req.user?.id;
 
   const validation = validateUpdatePasswordData({
     current_password,
@@ -161,15 +165,17 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error('Error updating user password:', error);
-    res.status(500).json({
-      status: 'general_error',
-      message: '❌ An error occurred while updating your password',
-    });
+    return sendJsonError(
+      res,
+      500,
+      'general_error',
+      '❌ An error occurred while updating your password'
+    );
   }
 });
 
 export const deleteUser = asyncHandler(async (req, res, next) => {
-  const userId = res.locals.currentUser.id;
+  const userId = req.user?.id;
 
   try {
     await prisma.user.delete({
@@ -187,9 +193,11 @@ export const deleteUser = asyncHandler(async (req, res, next) => {
     });
   } catch (error) {
     console.error('Error deleting user:', error);
-    res.status(500).json({
-      status: 'general_error',
-      message: '❌ An error occurred while deleting your account',
-    });
+    return sendJsonError(
+      res,
+      500,
+      'general_error',
+      '❌ An error occurred while deleting your account'
+    );
   }
 });
