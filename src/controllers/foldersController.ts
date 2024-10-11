@@ -5,7 +5,7 @@ import { sendJsonError, sendRenderedError } from '../utils/errorUtils';
 export const getFolders = asyncHandler(async (req, res) => {
   const folders = await prisma.folder.findMany({
     where: {
-      userId: req.user?.id,
+      userId: res.locals.currentUser.id,
     },
   });
 
@@ -13,9 +13,13 @@ export const getFolders = asyncHandler(async (req, res) => {
 });
 
 export const getHomeFolders = asyncHandler(async (req, res) => {
+  if (!res.locals.currentUser) {
+    return res.render('index');
+  }
+
   const folders = await prisma.folder.findMany({
     where: {
-      userId: req.user?.id,
+      userId: res.locals.currentUser.id,
     },
   });
 
@@ -27,7 +31,7 @@ export const getFolder = asyncHandler(async (req, res, next) => {
   const folderWithFiles = await prisma.folder.findUnique({
     where: {
       id: Number(folderId),
-      userId: req.user?.id,
+      userId: res.locals.currentUser.id,
     },
     include: {
       files: true,
@@ -50,7 +54,7 @@ export const createFolder = asyncHandler(async (req, res, next) => {
       name,
       user: {
         connect: {
-          id: req.user?.id,
+          id: res.locals.currentUser.id,
         },
       },
     },
@@ -64,7 +68,7 @@ export const editFolderGET = asyncHandler(async (req, res, next) => {
   const folder = await prisma.folder.findUnique({
     where: {
       id: Number(folderId),
-      userId: req.user?.id,
+      userId: res.locals.currentUser.id,
     },
   });
 
@@ -83,7 +87,7 @@ export const editFolderPUT = asyncHandler(async (req, res, next) => {
     const folder = await prisma.folder.update({
       where: {
         id: Number(folderId),
-        userId: req.user?.id,
+        userId: res.locals.currentUser.id,
       },
       data: {
         name,
@@ -103,7 +107,7 @@ export const deleteFolder = asyncHandler(async (req, res, next) => {
     await prisma.folder.delete({
       where: {
         id: Number(folderId),
-        userId: req.user?.id,
+        userId: res.locals.currentUser.id,
       },
     });
 

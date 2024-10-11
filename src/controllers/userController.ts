@@ -85,8 +85,7 @@ export const editUserGET = asyncHandler(async (req, res, next) => {
 
 export const updateName = asyncHandler(async (req, res, next) => {
   const { name } = req.body;
-  const userId = req.user?.id;
-
+  const userId = res.locals.currentUser.id;
   const validation = validateUpdateNameData({ name });
 
   if (!validation.success) {
@@ -122,7 +121,7 @@ export const updateName = asyncHandler(async (req, res, next) => {
 
 export const updatePassword = asyncHandler(async (req, res, next) => {
   const { current_password, new_password } = req.body;
-  const userId = req.user?.id;
+  const userId = res.locals.currentUser.id;
 
   const validation = validateUpdatePasswordData({
     current_password,
@@ -175,7 +174,7 @@ export const updatePassword = asyncHandler(async (req, res, next) => {
 });
 
 export const deleteUser = asyncHandler(async (req, res, next) => {
-  const userId = req.user?.id;
+  const userId = res.locals.currentUser.id;
 
   try {
     await prisma.user.delete({
